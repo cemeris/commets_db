@@ -27,7 +27,7 @@ class DB
         if ($result->num_rows > 0) {
             echo "<ul class='entry-list'>";
             while($row = $result->fetch_assoc()) {
-                echo "<li><span>" . $row['name'] . "</span>" . $row["comment"] . "</li>";
+                echo '<li><span>' . $this->text($row['name']) . '</span>' . $this->text($row['comment']) . ' <a href="update.php?update=' . $this->text($row['id']) . '" >Update</a></li>';
             }
             echo "</ul>";
         } else {
@@ -35,16 +35,46 @@ class DB
         }
     }
 
+    private function text($value) {
+        return htmlentities($value, ENT_COMPAT | ENT_HTML401 | ENT_QUOTES, 'utf-8');
+    }
+
     public function add($name, $comment) {
         if (!$this->connection) {
-            echo $this->$last_error;
-            return;
+            return $this->$last_error;
         }
 
-        $result = $this->connection->query("INSERT INTO comments (`name`, `comment`) VALUES ('$name', '$comment')");
-
+        $sql = sprintf(
+            "INSERT INTO comments (`name`, `comment`) VALUES ('%s', '%s')",
+            $this->connection->escape_string($name),
+            $this->connection->escape_string($comment)
+        );
+        
+        $result = $this->connection->query($sql);
         if ($result != true) {
-            echo 'Insert failed: ' . $this->connection->error;
+            return 'Insert failed: ' . $this->connection->error;
         }
+        
+        return 'Inserted';
+    }
+
+    public function update($id, $name, $comment) {
+        if (!$this->connection) {
+            return $this->$last_error;
+        }
+
+        $sql = sprintf(
+            "UPDATE comments SET `name`='%s', `comment`='%s' WHERE id=%s",
+            $this->connection->escape_string($name),
+            $this->connection->escape_string($comment),
+            $this->connection->escape_string($id)
+        );
+        
+        $result = $this->connection->query($sql);
+        if ($result != true) {
+            return 'Update failed: ' . $this->connection->error;
+        }
+        
+        return 'Updated';
     }
 }
