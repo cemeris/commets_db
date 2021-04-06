@@ -27,7 +27,7 @@ else {
 }
 
 ?>
-<form action="request.php" method="post" onsubmit="postSubmit.bind(this)(event)">
+<form action="request.php" onsubmit="postSubmit.bind(this)(event, updateElement)">
     <input type="hidden" name="id" value="<?=$id; ?>">
     <label for="comment-name">Name</label>
     <input type="text" name="name" id="comment-name" value="<?= text(@$entry['name']); ?>">
@@ -38,3 +38,6 @@ else {
 </form>
 
 <script src="script.js"></script>
+<script>
+    console.log("Hello world");
+</script>

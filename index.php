@@ -8,7 +8,7 @@
 ?>
 <link rel="stylesheet" href="style.css">
 
-<form action="request.php" method="post">
+<form action="request.php" method="post" onsubmit="postSubmit.bind(this)(event, addElement)">
     <label for="comment-name">Name</label>
     <input type="text" name="name" id="comment-name">
 

@@ -33,7 +33,7 @@ class DB
                         <span>%s</span>
                         %s
                         <a href="update.php?update=%s">Update</a>
-                        <a href="request.php?delete=%s" class="delete">x</a>
+                        <a href="request.php?delete=%s" class="delete" onclick="postFromLink.bind(this)(event)">x</a>
                     </li>',
                     $this->text($row['name']),
                     $this->text($row['comment']),
@@ -72,18 +72,24 @@ class DB
             return $this->last_error;
         }
 
+        $name = $this->connection->escape_string($name);
+        $comment = $this->connection->escape_string($comment);
         $sql = sprintf(
             "INSERT INTO comments (`name`, `comment`) VALUES ('%s', '%s')",
-            $this->connection->escape_string($name),
-            $this->connection->escape_string($comment)
+            $name,
+            $comment
         );
         
         $result = $this->connection->query($sql);
         if ($result != true) {
-            return 'Insert failed: ' . $this->connection->error;
+            return json_encode(['error' => $this->connection->error]);
         }
         
-        return 'Inserted';
+        return json_encode([
+            'name' => $this->text($name),
+            'comment' => $this->text($comment),
+            'id' => $this->text($this->connection->insert_id)
+        ]);
     }
 
     public function update($id, $name, $comment) {

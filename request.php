@@ -20,11 +20,10 @@ if (
         $_POST['id'] !== ''
     ) {
         echo $db->update($_POST['id'], $_POST['name'], $_POST['comment']);
-        echo "success";
+        echo " success";
     }
     else {
         echo $db->add($_POST['name'], $_POST['comment']);
-        echo "success";
     }
 }
 elseif (
@@ -32,8 +31,6 @@ elseif (
     is_string($_GET['delete']) &&
     $_GET['delete'] !== ''
 ) {
-    $db->delete($_GET['delete']);
+    echo $db->delete($_GET['delete']);
+    echo " success";
 }
-
-
-header('location: /');
