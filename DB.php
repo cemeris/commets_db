@@ -18,7 +18,7 @@ class DB
 
     public function displayAll() {
         if (!$this->connection) {
-            echo $this->$last_error;
+            echo $this->last_error;
             return;
         }
 
@@ -27,7 +27,19 @@ class DB
         if ($result->num_rows > 0) {
             echo "<ul class='entry-list'>";
             while($row = $result->fetch_assoc()) {
-                echo '<li><span>' . $this->text($row['name']) . '</span>' . $this->text($row['comment']) . ' <a href="update.php?update=' . $this->text($row['id']) . '" >Update</a></li>';
+                $id = $this->text($row['id']);
+                echo sprintf(
+                    '<li>
+                        <span>%s</span>
+                        %s
+                        <a href="update.php?update=%s">Update</a>
+                        <a href="request.php?delete=%s" class="delete">x</a>
+                    </li>',
+                    $this->text($row['name']),
+                    $this->text($row['comment']),
+                    $id,
+                    $id
+                );
             }
             echo "</ul>";
         } else {
@@ -35,13 +47,29 @@ class DB
         }
     }
 
-    private function text($value) {
+    public function get($id) {
+        if (!$this->connection) {
+            echo $this->last_error;
+            return;
+        }
+
+        $result = $this->connection->query(
+            sprintf(
+                "SELECT name, comment FROM comments WHERE id='%s'",
+                $this->connection->escape_string($id)
+            )
+        );
+
+        return ($result) ? $result->fetch_assoc() : [];
+    }
+
+    public function text($value) {
         return htmlentities($value, ENT_COMPAT | ENT_HTML401 | ENT_QUOTES, 'utf-8');
     }
 
     public function add($name, $comment) {
         if (!$this->connection) {
-            return $this->$last_error;
+            return $this->last_error;
         }
 
         $sql = sprintf(
@@ -60,11 +88,11 @@ class DB
 
     public function update($id, $name, $comment) {
         if (!$this->connection) {
-            return $this->$last_error;
+            return $this->last_error;
         }
 
         $sql = sprintf(
-            "UPDATE comments SET `name`='%s', `comment`='%s' WHERE id=%s",
+            "UPDATE comments SET `name`='%s', `comment`='%s' WHERE id='%s'",
             $this->connection->escape_string($name),
             $this->connection->escape_string($comment),
             $this->connection->escape_string($id)
@@ -76,5 +104,23 @@ class DB
         }
         
         return 'Updated';
+    }
+
+    public function delete($id) {
+        if (!$this->connection) {
+            return $this->last_error;
+        }
+
+        $sql = sprintf(
+            "DELETE FROM comments WHERE id=%s",
+            $this->connection->escape_string($id)
+        );
+        
+        $result = $this->connection->query($sql);
+        if ($result != true) {
+            return 'Delete failed: ' . $this->connection->error;
+        }
+        
+        return 'Deleted';
     }
 }

@@ -22,3 +22,7 @@
 
     $db->displayAll();
 ?>
+
+<!-- My file -->
+
+<script src="script.js"></script>

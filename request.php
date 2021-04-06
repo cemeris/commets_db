@@ -27,6 +27,13 @@ if (
         echo "success";
     }
 }
+elseif (
+    array_key_exists('delete', $_GET) &&
+    is_string($_GET['delete']) &&
+    $_GET['delete'] !== ''
+) {
+    $db->delete($_GET['delete']);
+}
 
 
-header('location: /FD-7/comments/');
+header('location: /');

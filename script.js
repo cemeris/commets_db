@@ -1,4 +1,7 @@
 function postSubmit(event) {
+    let url = this.getAttribute('action');
+    var data = new FormData(this);
+
     event.preventDefault();
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -7,11 +10,11 @@ function postSubmit(event) {
             success.bind(this)(event)
         }
     };
-    xhttp.open("POST", "demo_post.asp", true);
-    xhttp.send();
+    xhttp.open("POST", url, true);
+    xhttp.send(data);
 }
 
 function success(e) {
     alert();
-    //document.getElementById("demo").innerHTML = this.responseText;
 }
+
